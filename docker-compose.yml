@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  backend:
+    build: .
+    volumes:
+      - ./:/usr/src/
+    working_dir: /usr/src
+    command: sh -c 'alembic merge heads && python -m src'
+    networks:
+      - app-network
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./.env
+    depends_on:
+      - database
+
+  database:
+    image: postgres:latest
+    container_name: database_container
+    restart: always
+    volumes:
+      - ./postgresql_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - app-network
+    ports:
+      - "25432:5432"
+
+networks:
+    app-network:
