@@ -18,7 +18,6 @@ class ValidationPassword(BaseModel):
 
 class UserBase(BaseModel):
     email: EmailStr = Field(title="Enter the email")
-    username: str = Field(title="Enter the username")
 
 
 class UserCreateDTO(UserBase, ValidationPassword):

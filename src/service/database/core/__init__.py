@@ -9,8 +9,10 @@ from .session import create_as_session_maker, create_engine
 from src.core.settings import load_setting
 
 
-async def get_session() -> AsyncSession:
-    return create_as_session_maker(create_engine(load_setting().db_setting.get_url))
+def get_session() -> AsyncSession:
+    factory_session = create_as_session_maker(create_engine(load_setting().db_setting.get_url))
+    return factory_session()
+
 
 
 @asynccontextmanager
