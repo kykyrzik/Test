@@ -14,7 +14,6 @@ def get_session() -> AsyncSession:
     return factory_session()
 
 
-
 @asynccontextmanager
 async def transaction_gateway(session: AsyncSession) -> AsyncIterable[DatabaseGateway]:
     gateway = database_gateway_factory(factory_unit_of_work(session))

@@ -6,7 +6,7 @@ services:
     volumes:
       - ./:/usr/src/
     working_dir: /usr/src
-    command: sh -c 'alembic merge heads && python -m src'
+    command: sh -c 'alembic upgrade head && python -m src'
     networks:
       - app-network
     ports:
@@ -33,3 +33,4 @@ services:
 
 networks:
     app-network:
+      external: true

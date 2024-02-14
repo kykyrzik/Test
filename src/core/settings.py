@@ -27,8 +27,15 @@ class DBSetting(BaseSettings):
                                )
 
 
+class AuthJWT(BaseSettings):
+    private_key_path: Path = Path(__file__).parent.parent.parent / ".certs" / "jwt-private.pem"
+    public_key_path: Path = Path(__file__).parent.parent.parent / ".certs" / "jwt-public.pem"
+    ALGORITHM: str = "RS256"
+
+
 class Settings(BaseSettings):
     db_setting: DBSetting = DBSetting()
+    auth_jwt: AuthJWT = AuthJWT()
 
 
 @lru_cache
