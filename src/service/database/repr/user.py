@@ -25,9 +25,12 @@ class UserRepository(SQLAlchemyRepository):
         return convert_user_model_to_dto(result)
 
     async def get(self, email: str) -> Optional[UserInDB]:
-        return convert_user_model_to_dto(await self.read(field=self.model.email, value=email))
+        user = await self.read(field=self.model.email, value=email)
+        if not user:
+            return None
+        return convert_user_model_to_dto(user)
 
-    async def authenticate(self, form_data: OAuth2PasswordRequestForm) -> dict[str, str]:
+    async def authenticate(self, form_data: OAuth2PasswordRequestForm) -> Token:
         user = await self.get(form_data.username)
         if not user or not verify_password(form_data.password, user.password):
             raise HTTPException(status_code=404, detail="incorrect email or password")
@@ -36,4 +39,4 @@ class UserRepository(SQLAlchemyRepository):
             data={"sub": user.email, "scopes": form_data.scopes},
             expires_delta=access_token_minute,
         )
-        return {"access_token": access_token, "token_type": "Bearer"}
+        return Token(access_token=access_token, token_type="Bearer")

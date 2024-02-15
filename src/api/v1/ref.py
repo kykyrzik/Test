@@ -1,21 +1,14 @@
-from fastapi import APIRouter, Request
-from fastapi.exceptions import HTTPException
+from typing import Annotated
 
-from src.service.security import jwt
+from fastapi import APIRouter, Depends
+
+from .action.auth import get_current_user_from_token
+from src.common.dto.user import UserInDB
 
 ref_router = APIRouter(prefix="/ref", tags=["ref"])
 
 
-@ref_router.get("/")
-async def get_ref_code(request: Request) -> dict[str, str]:
-    token = request.cookies.get("access_token")
-    if not token:
-        raise HTTPException(status_code=403,
-                            detail="user inactive",
-                            )
-    payload = jwt.decode_access_token(token)
-    if payload:
-        return {payload.get("sub"): "111111"}
-    raise HTTPException(status_code=401,
-                        detail=f"invalid token error:"
-                        )
+@ref_router.get("/ref", response_model=UserInDB)
+async def get_ref_code(current_user: Annotated[UserInDB, Depends(get_current_user_from_token)]):
+    return current_user
+
