@@ -1,6 +1,6 @@
 from typing import Annotated, AsyncContextManager
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from redis.asyncio import Redis
 
 from src.service.database.core import get_session, transaction_gateway
@@ -20,3 +20,13 @@ async def user_create(user: UserCreateDTO,
     refer_email = await redis_client.get(user.referrer)
     result = await user_repr._create(user.model_copy(update={"referrer": refer_email}))
     return {'result': result}
+
+
+@user_router.get("/get_referrers")
+async def get_referrers(user_id: int,
+                        gateway: Annotated[AsyncContextManager, Depends(lambda: transaction_gateway(get_session()))]):
+    user_repr: UserRepository = (await gateway.__aenter__()).user()
+    user_referrer_email = await user_repr.get(user_id)
+    if user_referrer_email:
+        raise HTTPException(status_code=404, detail="incorrect user id")
+    return await user_repr.get_referrers(user_referrer_email)

@@ -1,4 +1,4 @@
-from typing import Type, Optional, Any
+from typing import Type, Optional, Any, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import (select,
@@ -54,3 +54,12 @@ class SQLAlchemyRepository(AbstractCRUDRepository[SessionType, Model]):
         if result.rowcount:
             return True
         return False
+
+    async def get_list(self, field: Any, model_id: Any) -> Optional[List[Model]]:
+        try:
+            stmt = (select(self.model)
+                    .where(field == model_id))
+            result = await self._session.scalars(stmt)
+            return result.all()
+        except NoResultFound:
+            return None

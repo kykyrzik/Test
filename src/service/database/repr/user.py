@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Type, Optional
+from typing import Type, Optional, List
 
 from fastapi.exceptions import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -24,8 +24,11 @@ class UserRepository(SQLAlchemyRepository):
         result = await self.create(data=new_user)
         return convert_user_model_to_dto(result)
 
-    async def get(self, email: str) -> Optional[UserInDB]:
-        user = await self.read(field=self.model.email, value=email)
+    async def get(self, data: str | int) -> Optional[UserInDB]:
+        if isinstance(data, str):
+            user = await self.read(field=self.model.email, value=data)
+        else:
+            user = await self.read(field=self.model.id, value=data)
         if not user:
             return None
         return convert_user_model_to_dto(user)
@@ -40,3 +43,7 @@ class UserRepository(SQLAlchemyRepository):
             expires_delta=access_token_minute,
         )
         return Token(access_token=access_token, token_type="Bearer")
+
+    async def get_referrers(self, email: str) -> Optional[List[UserInDB]]:
+        result = await self.get_list(field=self.model.referrer, model_id=email)
+        return [convert_user_model_to_dto(item) for item in result]
