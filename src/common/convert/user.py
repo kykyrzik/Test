@@ -6,5 +6,6 @@ def convert_user_model_to_dto(user: User) -> UserInDB:
     return UserInDB(id=user.id,
                     email=user.email,
                     password=user.hashed_password,
-                    is_active=user.is_active
+                    is_active=user.is_active,
+                    referrer=user.referrer
                     )

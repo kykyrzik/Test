@@ -21,6 +21,8 @@ class UserBase(BaseModel):
 
 
 class UserCreateDTO(UserBase, ValidationPassword):
+    referrer: str | None
+
     class Config:
         from_attributes = True
 
