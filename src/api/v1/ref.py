@@ -18,7 +18,8 @@ ref_router = APIRouter(prefix="/ref", tags=["ref"])
 @ref_router.get("/ref")
 async def get_ref_code(email: str,
                        current_user: Annotated[UserInDB, Depends(get_current_user_from_token)],
-                       redis_client: Annotated[Redis, Depends(connect_redis)]):
+                       redis_client: Annotated[Redis, Depends(connect_redis)]
+                       ) -> str:
     try:
         validate_email(email)
     except EmailSyntaxError as e:
@@ -40,7 +41,8 @@ async def get_ref_code(email: str,
 @ref_router.delete("/delete_ref")
 async def delete_ref_code(email: str,
                           current_user: Annotated[UserInDB, Depends(get_current_user_from_token)],
-                          redis_client: Annotated[Redis, Depends(connect_redis)]):
+                          redis_client: Annotated[Redis, Depends(connect_redis)]
+                          ) -> dict[str, str]:
     try:
         validate_email(email)
     except EmailSyntaxError as e:

@@ -1,4 +1,4 @@
-from typing import Annotated, AsyncContextManager
+from typing import Annotated, AsyncContextManager, Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from redis.asyncio import Redis
@@ -26,7 +26,8 @@ async def user_create(user: UserCreateDTO,
 
 @user_router.get("/get_referrers")
 async def get_referrers(user_id: int,
-                        gateway: Annotated[AsyncContextManager, Depends(lambda: transaction_gateway(get_session()))]):
+                        gateway: Annotated[AsyncContextManager, Depends(lambda: transaction_gateway(get_session()))]
+                        ) -> Optional[List[UserInDB]]:
     user_repr: UserRepository = (await gateway.__aenter__()).user()
     user_referrer_email = await user_repr.get(user_id)
     if user_referrer_email:
