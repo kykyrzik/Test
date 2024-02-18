@@ -18,6 +18,8 @@ async def user_create(user: UserCreateDTO,
                       ) -> dict[str, UserInDB]:
     user_repr: UserRepository = (await gateway.__aenter__()).user()
     refer_email = await redis_client.get(user.referrer)
+    if not refer_email:
+        raise HTTPException(status_code=401, detail="code is not found")
     result = await user_repr._create(user.model_copy(update={"referrer": refer_email}))
     return {'result': result}
 

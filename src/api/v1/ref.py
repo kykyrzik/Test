@@ -35,3 +35,21 @@ async def get_ref_code(email: str,
     await redis_client.set(email, ref_code, ex=TIMEOUT)
 
     return ref_code
+
+
+@ref_router.delete("/delete_ref")
+async def delete_ref_code(email: str,
+                          current_user: Annotated[UserInDB, Depends(get_current_user_from_token)],
+                          redis_client: Annotated[Redis, Depends(connect_redis)]):
+    try:
+        validate_email(email)
+    except EmailSyntaxError as e:
+        raise HTTPException(status_code=401, detail=e)
+
+    if email != current_user.email:
+        raise HTTPException(status_code=401, detail="email is not auth")
+
+    old_ref_code = await redis_client.get(email)
+    await redis_client.delete(old_ref_code)
+    await redis_client.delete(email)
+    return {"message": "success"}
