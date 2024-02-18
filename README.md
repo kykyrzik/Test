@@ -1,9 +1,9 @@
-# Test Task
+# Test task in Stakewolle
 
 ## Contents.
-1  [How deploy project](https://github.com/kykyryzik/Test#-1-Deploy-Manual)
+1  [How deploy project](https://github.com/kykyrzik/Test?tab=readme-ov-file#1-deploy-manual))
 
-2  [Testing]()
+2  [Testing](https://github.com/kykyrzik/Test/tree/main?tab=readme-ov-file#2-testing)
  
 ## 1 Deploy Manual
 
